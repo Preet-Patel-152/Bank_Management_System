@@ -51,6 +51,7 @@ while is_running:
         continue
 
     if action == "done":
+        save_data(accounts)
         print("THANK YOU FOR USING THE BANK ACCOUNT APP")
         is_running = False
 
@@ -69,6 +70,7 @@ while is_running:
 
         else:
             accounts[name] = bank(name, password, 0)
+            save_data(accounts)
             print("Account created successfully!")
             continue
 
@@ -108,6 +110,7 @@ while is_running:
                                 continue
                             else:
                                 print(bank_acc.deposit(amount))
+                                save_data(accounts)
 
                         except ValueError:
                             print("Invalid input. Please enter a valid number.")
@@ -123,6 +126,7 @@ while is_running:
                                 continue
                             else:
                                 print(bank_acc.withdraw(amount))
+                                save_data(accounts)
 
                         except ValueError:
                             print("Invalid input. Please enter a valid number.")
@@ -134,6 +138,7 @@ while is_running:
                     case "change password":
                         new_password = input("Enter new password: ").strip()
                         print(bank_acc.change_acccout_password(new_password))
+                        save_data(accounts)
 
                     case "check history":
                         print("\n--- Transaction History ---")
@@ -165,6 +170,7 @@ while is_running:
 
                             bank_acc.withdraw(amount)
                             accounts_recipient.deposit(amount)
+                            save_data(accounts)
                             print(
                                 f"Transferred ${amount} to {recipient_name}.")
 
@@ -196,6 +202,7 @@ while is_running:
 
                     case "exit":
                         print("Exiting account management.")
+                        save_data(accounts)
                         break
 
                     case _:

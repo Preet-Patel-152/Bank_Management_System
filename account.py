@@ -7,6 +7,10 @@ class bank:
         self.balance = initial_balance
         self.history = []
         self.history.append(f"Account created with ${initial_balance}")
+
+        if initial_balance == 0:
+            self.history.append(f"Account created with $0")
+
         bank.num_bank_acc += 1
 
     def change_acccout_password(self, new_password):
