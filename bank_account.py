@@ -93,11 +93,11 @@ while is_running:
 
                 print(
                     "\nAvailable actions:\n"
-                    "deposit\nwithdraw\ncheck balance\nchange password\ntransfer\ncheck history\ndelete account\nexit")
+                    "-deposit\n-withdraw\n-check balance\n-change password\n-transfer\n-check history\n-delete account\n-exit")
 
                 user_action = input("Enter action: ").strip().lower()
 
-                if user_action not in ["deposit", "withdraw", "check balance", "change password", "transfer", "developer", "exit", "check history", "delete account"]:
+                if user_action not in ["deposit", "withdraw", "check balance", "change password", "transfer", "dev", "exit", "check history", "delete account"]:
                     print("Invalid action. Please try again.")
                     continue
 
@@ -211,7 +211,7 @@ while is_running:
                         except ValueError:
                             print("Invalid input. Please enter a numeric amount.")
 
-                    case "developer":
+                    case "dev":
                         print("Developer mode activated.")
                         print('        _   ,_,   _')
                         print('       / `\'=) (=\'` \\')
@@ -221,12 +221,17 @@ while is_running:
                         while True:
 
                             dev_action = input(
-                                "what would you like to do check number of accounts or quit? ").strip().lower()
+                                "what would you like to do check number of accounts, check total bank balance, or quit? ").strip().lower()
 
                             match dev_action:
                                 case "check number of accounts":
                                     print(
                                         f"Total bank accounts: {bank.num_bank_acc}")
+
+                                case "check total bank balance":
+                                    print(
+                                        f"Total bank balance across all accounts: ${bank.toatal_bank_balance}")
+
                                 case "quit":
                                     print("Exiting developer mode.")
                                     break
