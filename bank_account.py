@@ -1,7 +1,42 @@
+import json
+import os
 from account import bank
 
-accounts = {}
-accounts["Alice"] = bank("Alice", "password123", 1000)
+
+def save_data(accounts):
+    """Converts Bank objects into JSON-friendly dictionaries and saves to disk."""
+    serializable_data = {}
+    for name, acc in accounts.items():
+        serializable_data[name] = {
+            "name": acc.name,
+            "password": acc.password,
+            "balance": acc.balance,
+            "history": acc.history
+        }
+    with open("accounts.json", "w") as f:
+        json.dump(serializable_data, f, indent=4)
+
+
+def load_data():
+    """Loads JSON data and reconstructs Bank objects into the accounts dictionary."""
+    if not os.path.exists("accounts.json"):
+        return {}
+
+    try:
+        with open("accounts.json", "r") as f:
+            raw_data = json.load(f)
+            loaded_accounts = {}
+            for name, info in raw_data.items():
+                # Reconstruct the object
+                acc = bank(info["name"], info["password"], info["balance"])
+                acc.history = info["history"]  # Restore the history list
+                loaded_accounts[name] = acc
+            return loaded_accounts
+    except (json.JSONDecodeError, KeyError):
+        return {}
+
+
+accounts = load_data()
 
 
 is_running = True
