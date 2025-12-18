@@ -6,7 +6,6 @@ class bank:
         self.password = password
         self.balance = initial_balance
         self.history = []
-        self.history.append(f"Account created with ${initial_balance}")
 
         if initial_balance == 0:
             self.history.append(f"Account created with $0")
