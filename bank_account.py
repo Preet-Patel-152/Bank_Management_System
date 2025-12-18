@@ -86,7 +86,7 @@ while is_running:
         password = input("Enter account password: ").strip()
 
         if name in accounts and accounts[name].password == password:
-            bank_acc = accounts[name]
+            current_account = accounts[name]
             print("Access granted.")
 
             while True:
@@ -111,7 +111,7 @@ while is_running:
                                 print("Deposit amount must be positive.")
                                 continue
                             else:
-                                print(bank_acc.deposit(amount))
+                                print(current_account.deposit(amount))
                                 save_data(accounts)
 
                         except ValueError:
@@ -122,12 +122,12 @@ while is_running:
                         try:
                             amount = float(input("Enter amount to withdraw: "))
 
-                            if amount <= 0 or amount > bank_acc.balance:
+                            if amount <= 0 or amount > current_account.balance:
                                 print(
                                     "Withdrawal amount must be positive and within available balance.")
                                 continue
                             else:
-                                print(bank_acc.withdraw(amount))
+                                print(current_account.withdraw(amount))
                                 save_data(accounts)
 
                         except ValueError:
@@ -135,40 +135,41 @@ while is_running:
                             continue
 
                     case "check balance":
-                        print(bank_acc.check_balance())
+                        print(current_account.check_balance())
 
                     case "change password":
                         new_password = input("Enter new password: ").strip()
-                        print(bank_acc.change_acccout_password(new_password))
+                        print(current_account.change_accout_password(new_password))
                         save_data(accounts)
 
                     case "delete account":
 
-                        if bank_acc.balance > 0:
+                        if current_account.balance > 0:
                             print(
                                 f"\nBLOCKER: You cannot delete an account with a remaining balance.")
-                            print(f"Current Balance: ${bank_acc.balance}")
+                            print(
+                                f"Current Balance: ${current_account.balance}")
                             print(
                                 "Please withdraw all funds before attempting to delete this account.")
                             continue
 
                         print(
-                            f"\nYou are about to delete the account for {bank_acc.name}.")
+                            f"\nYou are about to delete the account for {current_account.name}.")
                         print(
                             "\nWARNING: This action is permanent and cannot be undone.")
                         confirm = input(
-                            f"Type 'DELETE {bank_acc.name.upper()}' to confirm: ").strip()
+                            f"Type 'DELETE {current_account.name.upper()}' to confirm: ").strip()
 
-                        if confirm == f"DELETE {bank_acc.name.upper()}":
+                        if confirm == f"DELETE {current_account.name.upper()}":
                             # 3. Remove from memory and update total counter
-                            accounts.pop(bank_acc.name)
+                            accounts.pop(current_account.name)
                             bank.num_bank_acc -= 1
 
                             # 4. Save the empty state to JSON
                             save_data(accounts)
 
                             print(
-                                f"\nSUCCESS: Account for {bank_acc.name} has been closed and deleted.")
+                                f"\nSUCCESS: Account for {current_account.name} has been closed and deleted.")
                             break  # Exit the account management loop
                         else:
                             print(
@@ -176,20 +177,20 @@ while is_running:
 
                     case "check history":
                         print("\n--- Transaction History ---")
-                        print(bank_acc.get_history())
+                        print(current_account.get_history())
 
                     case "transfer":
 
                         recipient_name = input(
                             "Enter recipient account holder name: ").strip()
-                        accounts_recipient = accounts.get(recipient_name)
+                        recipient_account = accounts.get(recipient_name)
 
-                        if not accounts_recipient:
+                        if not recipient_account:
                             print(
                                 f"Error: Account for '{recipient_name}' not found.")
                             continue
 
-                        if recipient_name == bank_acc.name:
+                        if recipient_name == current_account.name:
                             print("Error: You cannot transfer money to yourself.")
                             continue
 
@@ -197,13 +198,13 @@ while is_running:
                             amount = float(
                                 input("Enter amount to transfer: "))
 
-                            if amount <= 0 or amount > bank_acc.balance:
+                            if amount <= 0 or amount > current_account.balance:
                                 print(
                                     "Invalid amount. It must be positive and not exceed your balance.")
                                 continue
 
-                            bank_acc.withdraw(amount)
-                            accounts_recipient.deposit(amount)
+                            current_account.withdraw(amount)
+                            recipient_account.deposit(amount)
                             save_data(accounts)
                             print(
                                 f"Transferred ${amount} to {recipient_name}.")
@@ -230,7 +231,7 @@ while is_running:
 
                                 case "check total bank balance":
                                     print(
-                                        f"Total bank balance across all accounts: ${bank.toatal_bank_balance}")
+                                        f"Total bank balance across all accounts: ${bank.total_bank_balance}")
 
                                 case "quit":
                                     print("Exiting developer mode.")
