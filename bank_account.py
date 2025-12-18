@@ -4,7 +4,7 @@ from account import bank
 
 
 def save_data(accounts):
-    """Converts Bank objects into JSON-friendly dictionaries and saves to disk."""
+
     serializable_data = {}
     for name, acc in accounts.items():
         serializable_data[name] = {
@@ -18,7 +18,7 @@ def save_data(accounts):
 
 
 def load_data():
-    """Loads JSON data and reconstructs Bank objects into the accounts dictionary."""
+
     if not os.path.exists("accounts.json"):
         return {}
 
@@ -26,6 +26,8 @@ def load_data():
         with open("accounts.json", "r") as f:
             raw_data = json.load(f)
             loaded_accounts = {}
+
+            bank.num_bank_acc = 0
             for name, info in raw_data.items():
                 # Reconstruct the object
                 acc = bank(info["name"], info["password"], info["balance"])
@@ -44,7 +46,7 @@ is_running = True
 while is_running:
 
     action = input("would you like to create a new account or access existing account?\n"
-                   " type new for new account, exi for existing account or done to exit out the program: ").strip().lower()
+                   "type new for new account, exi for existing account or done to exit out the program: ").strip().lower()
 
     if action not in ["new", "exi", "done"]:
         print("Invalid action. Please try again.")
@@ -91,11 +93,11 @@ while is_running:
 
                 print(
                     "\nAvailable actions:\n"
-                    "deposit\nwithdraw\ncheck balance\nchange password\ntransfer\ncheck history\n exit")
+                    "deposit\nwithdraw\ncheck balance\nchange password\ntransfer\ncheck history\ndelete account\nexit")
 
                 user_action = input("Enter action: ").strip().lower()
 
-                if user_action not in ["deposit", "withdraw", "check balance", "change password", "transfer", "developer", "exit", "check history"]:
+                if user_action not in ["deposit", "withdraw", "check balance", "change password", "transfer", "developer", "exit", "check history", "delete account"]:
                     print("Invalid action. Please try again.")
                     continue
 
@@ -139,6 +141,38 @@ while is_running:
                         new_password = input("Enter new password: ").strip()
                         print(bank_acc.change_acccout_password(new_password))
                         save_data(accounts)
+
+                    case "delete account":
+
+                        if bank_acc.balance > 0:
+                            print(
+                                f"\nBLOCKER: You cannot delete an account with a remaining balance.")
+                            print(f"Current Balance: ${bank_acc.balance}")
+                            print(
+                                "Please withdraw all funds before attempting to delete this account.")
+                            continue
+
+                        print(
+                            f"\nYou are about to delete the account for {bank_acc.name}.")
+                        print(
+                            "\nWARNING: This action is permanent and cannot be undone.")
+                        confirm = input(
+                            f"Type 'DELETE {bank_acc.name.upper()}' to confirm: ").strip()
+
+                        if confirm == f"DELETE {bank_acc.name.upper()}":
+                            # 3. Remove from memory and update total counter
+                            accounts.pop(bank_acc.name)
+                            bank.num_bank_acc -= 1
+
+                            # 4. Save the empty state to JSON
+                            save_data(accounts)
+
+                            print(
+                                f"\nSUCCESS: Account for {bank_acc.name} has been closed and deleted.")
+                            break  # Exit the account management loop
+                        else:
+                            print(
+                                "\nDeletion cancelled. Confirmation text did not match.")
 
                     case "check history":
                         print("\n--- Transaction History ---")

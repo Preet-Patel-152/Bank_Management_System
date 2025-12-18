@@ -22,14 +22,5 @@
             "Withdrew: $50.0. New balance: $4950.0.",
             "Withdrew: $500.0. New balance: $4450.0."
         ]
-    },
-    "miraji": {
-        "name": "miraji",
-        "password": "4444",
-        "balance": 500.0,
-        "history": [
-            "Account created with $0",
-            "Deposited: $500.0. New balance: $500.0."
-        ]
     }
 }
