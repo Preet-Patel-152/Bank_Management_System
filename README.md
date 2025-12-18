@@ -16,6 +16,7 @@ A robust, object-oriented banking application built with Python. This project de
 - **Language:** Python 3.10+
 - **Concepts:** Object-Oriented Programming (OOP), Data Sanitization, Error Handling, State Management.
 - **Modern Syntax:** Utilizes Python's `match-case` statements for clean, readable action routing.
+- **Storage:** JSON (JavaScript Object Notation)
 
 ## Project Structure
 
