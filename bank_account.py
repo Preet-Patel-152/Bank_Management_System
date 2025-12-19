@@ -31,6 +31,7 @@ ACCOUNT_ACTIONS = {
 
 
 def save_data(accounts):
+    """Converts Bank objects into JSON-friendly dictionaries and saves to disk."""
 
     serializable_data = {}
 
@@ -49,9 +50,7 @@ def save_data(accounts):
 
 
 def load_data():
-
-    # Load accounts from a JSON file and rebuild bank objects.
-    # If the file doesn't exist or is corrupted, return an empty dict.
+    """Loads JSON data and reconstructs Bank objects into the accounts dictionary."""
 
     # If no save file exists, start with no accounts
     if not os.path.exists(DATA_FILE):
