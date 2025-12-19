@@ -7,7 +7,9 @@ from bank_project.account import bank
 # =============================
 
 # File used to persist account data between program runs
-DATA_FILE = "accounts.json"
+DATA_FILE = os.path.join(os.path.dirname(
+    __file__), "..", "data", "accounts.json")
+DATA_FILE = os.path.abspath(DATA_FILE)
 
 # Valid actions for the main menu (create, login, exit)
 MAIN_ACTIONS = {"new", "exi", "done"}
