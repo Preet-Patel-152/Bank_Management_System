@@ -1,6 +1,6 @@
 import json
 import os
-from account import bank
+from bank_project.account import bank
 
 # =============================
 # Constants & Configuration
