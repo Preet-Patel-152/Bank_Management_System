@@ -57,7 +57,7 @@ From the project root directory, run:
 python -m bank_project.bank_app.main 
 ```
 
-## 📁 Project Structure
+## Project Structure
 
 ```text
 Bank_Management_System/
