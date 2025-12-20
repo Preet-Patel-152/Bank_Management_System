@@ -1,6 +1,7 @@
 import json
 import os
 from bank_project.account import bank
+from bank_project.bank_app.services.storage import save_data, load_data
 
 # =============================
 # Constants & Configuration
@@ -31,52 +32,6 @@ ACCOUNT_ACTIONS = {
 # Persistence (Save / Load)
 # =============================
 
-
-def save_data(accounts):
-    """Converts Bank objects into JSON-friendly dictionaries and saves to disk."""
-
-    serializable_data = {}
-
-    # Convert each bank object into a dictionary
-    for name, acc in accounts.items():
-        serializable_data[name] = {
-            "name": acc.name,
-            "password": acc.password,
-            "balance": acc.balance,
-            "history": acc.history
-        }
-
-    # Write the dictionary to accounts.json
-    with open(DATA_FILE, "w") as f:
-        json.dump(serializable_data, f, indent=4)
-
-
-def load_data():
-    """Loads JSON data and reconstructs Bank objects into the accounts dictionary."""
-
-    # If no save file exists, start with no accounts
-    if not os.path.exists(DATA_FILE):
-        return {}
-
-    try:
-        with open(DATA_FILE, "r") as f:
-            raw_data = json.load(f)
-            loaded_accounts = {}
-
-            # Reset the class-level counter before rebuilding objects
-            bank.num_bank_acc = 0
-
-            # Reconstruct each account back into a bank object
-            for name, info in raw_data.items():
-                # Reconstruct the object
-                acc = bank(info["name"], info["password"], info["balance"])
-                acc.history = info["history"]  # Restore the history list
-                loaded_accounts[name] = acc
-            return loaded_accounts
-
-    # If JSON is broken or missing expected keys, fail safely
-    except (json.JSONDecodeError, KeyError):
-        return {}
 
 # =============================
 # App Startup

@@ -17,13 +17,14 @@
     "kamini": {
         "name": "kamini",
         "password": "54321",
-        "balance": 4600.0,
+        "balance": 7100.0,
         "history": [
             "Account created with $0",
             "Deposited: $400.0. New balance: $400.0.",
             "Deposited: $1000.0. New balance: $1400.0.",
             "Deposited: $3000.0. New balance: $4400.0.",
-            "Deposited: $200.0. New balance: $4600.0."
+            "Deposited: $200.0. New balance: $4600.0.",
+            "Deposited: $2500.0. New balance: $7100.0."
         ]
     },
     "bharat": {
