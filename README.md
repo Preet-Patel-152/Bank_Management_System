@@ -4,7 +4,7 @@ A robust, object-oriented banking application built in Python that simulates rea
 
 ---
 
-## 🚀 Features
+## Features
 
 - **User Authentication**  
   Secure login system requiring valid account holder credentials.
@@ -29,7 +29,7 @@ A robust, object-oriented banking application built in Python that simulates rea
 
 ---
 
-## 🧠 Technical Overview
+## Technical Overview
 
 - **Language:** Python 3.10+
 - **Paradigm:** Object-Oriented Programming (OOP)
@@ -44,7 +44,7 @@ A robust, object-oriented banking application built in Python that simulates rea
 ---
 ---
 
-## ▶️ How to Run
+## How to Run
 
 ### Prerequisites
 - Python 3.10 or higher
