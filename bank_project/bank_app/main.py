@@ -2,6 +2,8 @@ import json
 import os
 from bank_project.account import bank
 from bank_project.bank_app.services.storage import save_data, load_data
+from bank_project.bank_app.services.bank_service import BankService
+
 
 # =============================
 # Constants & Configuration
@@ -39,6 +41,7 @@ def main():
 
     # Load existing accounts from file (if any)
     accounts = load_data()
+    service = BankService(accounts)
 
     is_running = True
 
@@ -70,12 +73,6 @@ def main():
         # -------------------------
         elif action == "new":
             name = input("Enter account holder name: ").strip()
-
-            # Basic name validation: letters only
-            if name.isalpha() == False:
-                print("Name must contain only alphabetic characters. Try again.")
-                continue
-
             password = input("Enter account password: ").strip()
 
             # Prevent duplicate usernames
@@ -85,9 +82,12 @@ def main():
 
             # Create the account object and save immediately
             else:
-                accounts[name] = bank(name, password, 0)
-                save_data(accounts)
-                print("Account created successfully!")
+                try:
+                    service.create_account(name, password)
+                    save_data(service.accounts)
+                    print("Account created successfully!")
+                except ValueError as e:
+                    print(e)
                 continue
 
         # -------------------------
@@ -95,234 +95,177 @@ def main():
         # -------------------------
         elif action == "exi":
             name = input("Enter account holder name: ").strip()
-
-            # Validate name format
-            if name.isalpha() == False:
-                print("Name must contain only alphabetic characters. Try again.")
-                continue
-
             password = input("Enter account password: ").strip()
 
             # Check username exists and password matches
-            if name in accounts and accounts[name].password == password:
-                current_account = accounts[name]
+            try:
+                current_account = service.login(name, password)
                 print("Access granted.")
+            except ValueError as e:
+                print(e)
+                continue
 
                 # =============================
                 # Account Management Loop
                 # =============================
-                while True:
+            while True:
 
-                    # Show available account actions
-                    print(
-                        "\nAvailable actions:\n"
-                        "-deposit\n-withdraw\n-check balance\n-change password\n-transfer\n-check history\n-delete account\n-exit")
+                # Show available account actions
+                print(
+                    "\nAvailable actions:\n"
+                    "-deposit\n-withdraw\n-check balance\n-change password\n-transfer\n-check history\n-delete account\n-exit")
 
-                    user_action = input("Enter action: ").strip().lower()
+                user_action = input("Enter action: ").strip().lower()
 
-                    # Validate user action
-                    if user_action not in ACCOUNT_ACTIONS:
-                        print("Invalid action. Please try again.")
-                        continue
+                # Validate user action
+                if user_action not in ACCOUNT_ACTIONS:
+                    print("Invalid action. Please try again.")
+                    continue
 
-                    # Use match-case to route to the selected feature
-                    match user_action:
+                # Use match-case to route to the selected feature
+                match user_action:
 
-                        # -------------------------
-                        # Deposit money
-                        # -------------------------
-                        case "deposit":
+                    # -------------------------
+                    # Deposit money
+                    # -------------------------
+                    case "deposit":
 
-                            try:
-                                amount = float(
-                                    input("Enter amount to deposit: "))
+                        try:
+                            amount = float(
+                                input("Enter amount to deposit: "))
 
-                                # Reject zero/negative deposits
-                                if amount <= 0:
-                                    print("Deposit amount must be positive.")
-                                    continue
-                                else:
-                                    print(current_account.deposit(amount))
-                                    # Save after state change
-                                    save_data(accounts)
-
-                            except ValueError:
-                                print("Invalid input. Please enter a valid number.")
+                            # Reject zero/negative deposits
+                            if amount <= 0:
+                                print("Deposit amount must be positive.")
                                 continue
-
-                        # -------------------------
-                        # Withdraw money
-                        # -------------------------
-                        case "withdraw":
-
-                            try:
-                                amount = float(
-                                    input("Enter amount to withdraw: "))
-
-                                # Reject invalid or overdraft withdrawals
-                                if amount <= 0 or amount > current_account.balance:
-                                    print(
-                                        "Withdrawal amount must be positive and within available balance.")
-                                    continue
-                                else:
-                                    print(current_account.withdraw(amount))
-                                    # Save after state change
-                                    save_data(accounts)
-
-                            except ValueError:
-                                print("Invalid input. Please enter a valid number.")
-                                continue
-
-                        # -------------------------
-                        # Check balance (read-only)
-                        # -------------------------
-                        case "check balance":
-
-                            print(current_account.check_balance())
-
-                        # -------------------------
-                        # Change password
-                        # -------------------------
-                        case "change password":
-
-                            new_password = input(
-                                "Enter new password: ").strip()
-                            print(current_account.change_accout_password(
-                                new_password))
-                            save_data(accounts)  # Save new password
-
-                        # -------------------------
-                        # Delete account (only if balance is zero)
-                        # -------------------------
-                        case "delete account":
-
-                            # Do not allow deleting accounts with remaining funds
-                            if current_account.balance > 0:
-                                print(
-                                    f"\nBLOCKER: You cannot delete an account with a remaining balance.")
-                                print(
-                                    f"Current Balance: ${current_account.balance}")
-                                print(
-                                    "Please withdraw all funds before attempting to delete this account.")
-                                continue
-
-                            # Confirmation step to avoid accidental deletion
-                            print(
-                                f"\nYou are about to delete the account for {current_account.name}.")
-                            print(
-                                "\nWARNING: This action is permanent and cannot be undone.")
-                            confirm = input(
-                                f"Type 'DELETE {current_account.name.upper()}' to confirm: ").strip()
-
-                            if confirm == f"DELETE {current_account.name.upper()}":
-                                # Remove from memory and update total counter
-                                accounts.pop(current_account.name)
-                                bank.num_bank_acc -= 1
-
-                                # Save the empty state to JSON
-                                save_data(accounts)
-
-                                print(
-                                    f"\nSUCCESS: Account for {current_account.name} has been closed and deleted.")
-                                break  # Exit the account management loop
                             else:
-                                print(
-                                    "\nDeletion cancelled. Confirmation text did not match.")
+                                try:
+                                    print(service.deposit(
+                                        current_account, amount))
+                                    save_data(service.accounts)
+                                except ValueError as e:
+                                    print(e)
 
-                        # -------------------------
-                        # View transaction history
-                        # -------------------------
-                        case "check history":
-                            print("\n--- Transaction History ---")
-                            print(current_account.get_history())
+                        except ValueError:
+                            print("Invalid input. Please enter a valid number.")
+                            continue
 
-                        # -------------------------
-                        # Transfer money to another user
-                        # -------------------------
-                        case "transfer":
+                    # -------------------------
+                    # Withdraw money
+                    # -------------------------
+                    case "withdraw":
 
-                            recipient_name = input(
-                                "Enter recipient account holder name: ").strip()
-                            recipient_account = accounts.get(recipient_name)
+                        try:
+                            amount = float(input("Enter amount to withdraw: "))
+                            print(service.withdraw(current_account, amount))
+                            save_data(service.accounts)
+                        except ValueError as e:
+                            print(e)
 
-                            # Validate recipient exists
-                            if not recipient_account:
-                                print(
-                                    f"Error: Account for '{recipient_name}' not found.")
-                                continue
+                    # -------------------------
+                    # Check balance (read-only)
+                    # -------------------------
+                    case "check balance":
 
-                            # Prevent transferring to yourself
-                            if recipient_name == current_account.name:
-                                print(
-                                    "Error: You cannot transfer money to yourself.")
-                                continue
+                        print(current_account.check_balance())
 
-                            try:
-                                amount = float(
-                                    input("Enter amount to transfer: "))
+                    # -------------------------
+                    # Change password
+                    # -------------------------
+                    case "change password":
 
-                                # Validate transfer amount
-                                if amount <= 0 or amount > current_account.balance:
-                                    print(
-                                        "Invalid amount. It must be positive and not exceed your balance.")
-                                    continue
+                        new_password = input(
+                            "Enter new password: ").strip()
+                        print(current_account.change_accout_password(
+                            new_password))
+                        save_data(accounts)  # Save new password
 
-                                # Perform transfer: withdraw from sender, deposit to recipient
-                                current_account.withdraw(amount)
-                                recipient_account.deposit(amount)
+                    # -------------------------
+                    # Delete account (only if balance is zero)
+                    # -------------------------
+                    case "delete account":
 
-                                # Save both accounts after transfer
-                                save_data(accounts)
+                        print(
+                            f"\nYou are about to delete the account for {current_account.name}.")
+                        print(
+                            "\nWARNING: This action is permanent and cannot be undone.")
+                        confirm = input(
+                            f"Type 'DELETE {current_account.name.upper()}' to confirm: ").strip()
 
-                                print(
-                                    f"Transferred ${amount} to {recipient_name}.")
-
-                            except ValueError:
-                                print(
-                                    "Invalid input. Please enter a numeric amount.")
-
-                        # -------------------------
-                        # Developer mode (admin tools)
-                        # -------------------------
-                        case "dev":
-                            print("Developer mode activated.")
-                            print('        _   ,_,   _')
-                            print('       / `\'=) (=\'` \\')
-                            print('      /.-.-.\\ /.-.-.\\ ')
-                            print('      `      "      `')
-
-                            # Separate loop for dev tools
-                            while True:
-
-                                dev_action = input(
-                                    "what would you like to do check number of accounts, check total bank balance, or quit? ").strip().lower()
-
-                                match dev_action:
-                                    case "check number of accounts":
-                                        print(
-                                            f"Total bank accounts: {bank.num_bank_acc}")
-
-                                    case "check total bank balance":
-                                        print(
-                                            f"Total bank balance across all accounts: ${bank.total_bank_balance}")
-
-                                    case "quit":
-                                        print("Exiting developer mode.")
-                                        break
-                                    case _:
-                                        print(
-                                            "Invalid developer action. Please try again.")
-
-                        # -------------------------
-                        # Exit account management
-                        # -------------------------
-                        case "exit":
-                            print("Exiting account management.")
-                            save_data(accounts)
+                        try:
+                            service.delete_account(current_account, confirm)
+                            save_data(service.accounts)
+                            print(
+                                f"\nSUCCESS: Account for {current_account.name} has been closed and deleted.")
                             break
+                        except ValueError as e:
+                            print(e)
 
-                        case _:
-                            print("Invalid action. Please try again.")
+                    # -------------------------
+                    # View transaction history
+                    # -------------------------
+                    case "check history":
+                        print("\n--- Transaction History ---")
+                        print(current_account.get_history())
+
+                    # -------------------------
+                    # Transfer money to another user
+                    # -------------------------
+                    case "transfer":
+
+                        recipient_name = input(
+                            "Enter recipient account holder name: ").strip()
+
+                        try:
+                            amount = float(input("Enter amount to transfer: "))
+                            print(service.transfer(
+                                current_account, recipient_name, amount))
+                            save_data(service.accounts)
+                        except ValueError as e:
+                            print(e)
+
+                    # -------------------------
+                    # Developer mode (admin tools)
+                    # -------------------------
+                    case "dev":
+                        print("Developer mode activated.")
+                        print('        _   ,_,   _')
+                        print('       / `\'=) (=\'` \\')
+                        print('      /.-.-.\\ /.-.-.\\ ')
+                        print('      `      "      `')
+
+                        # Separate loop for dev tools
+                        while True:
+
+                            dev_action = input(
+                                "what would you like to do check number of accounts, check total bank balance, or quit? ").strip().lower()
+
+                            match dev_action:
+                                case "check number of accounts":
+                                    print(
+                                        f"Total bank accounts: {bank.num_bank_acc}")
+
+                                case "check total bank balance":
+                                    print(
+                                        f"Total bank balance across all accounts: ${bank.total_bank_balance}")
+
+                                case "quit":
+                                    print("Exiting developer mode.")
+                                    break
+                                case _:
+                                    print(
+                                        "Invalid developer action. Please try again.")
+
+                    # -------------------------
+                    # Exit account management
+                    # -------------------------
+                    case "exit":
+                        print("Exiting account management.")
+                        save_data(accounts)
+                        break
+
+                    case _:
+                        print("Invalid action. Please try again.")
             else:
                 # Login failed
                 print("Access denied. Incorrect name or password.")
