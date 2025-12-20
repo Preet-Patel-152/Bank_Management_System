@@ -60,3 +60,17 @@ Bank_Management_System/
 ├── .gitignore
 ├── README.md
 
+---
+
+## ▶️ How to Run
+
+### Prerequisites
+- Python 3.10 or higher
+
+### Run the Application
+
+From the project root directory, run:
+
+```bash
+python -m bank_project.bank_app.main
+
