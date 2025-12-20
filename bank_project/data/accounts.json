@@ -37,5 +37,14 @@
             "Withdrew: $250.0. New balance: $2750.0.",
             "Withdrew: $200.0. New balance: $2550.0."
         ]
+    },
+    "parth": {
+        "name": "parth",
+        "password": "6767",
+        "balance": 2000.0,
+        "history": [
+            "Account created with $0",
+            "Deposited: $2000.0. New balance: $2000.0."
+        ]
     }
 }
