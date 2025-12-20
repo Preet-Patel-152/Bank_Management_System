@@ -1,5 +1,3 @@
-import json
-import os
 from bank_project.account import bank
 from bank_project.bank_app.services.storage import save_data, load_data
 from bank_project.bank_app.services.bank_service import BankService
@@ -8,11 +6,6 @@ from bank_project.bank_app.services.bank_service import BankService
 # =============================
 # Constants & Configuration
 # =============================
-
-# File used to persist account data between program runs
-DATA_FILE = os.path.join(os.path.dirname(
-    __file__), "..", "data", "accounts.json")
-DATA_FILE = os.path.abspath(DATA_FILE)
 
 # Valid actions for the main menu (create, login, exit)
 MAIN_ACTIONS = {"new", "exi", "done"}
@@ -43,13 +36,11 @@ def main():
     accounts = load_data()
     service = BankService(accounts)
 
-    is_running = True
-
     # =============================
     # Main Menu Loop (Create / Login / Exit)
     # =============================
 
-    while is_running:
+    while True:
 
         # Main prompt: choose new account, existing account, or exit
         action = input("would you like to create a new account or access existing account?\n"
@@ -64,9 +55,9 @@ def main():
         # Exit program safely
         # -------------------------
         if action == "done":
-            save_data(accounts)
+            save_data(service.accounts)
             print("THANK YOU FOR USING THE BANK ACCOUNT APP")
-            is_running = False
+            break
 
         # -------------------------
         # Create a new account
@@ -75,19 +66,13 @@ def main():
             name = input("Enter account holder name: ").strip()
             password = input("Enter account password: ").strip()
 
-            # Prevent duplicate usernames
-            if name in accounts:
-                print("Username already exists. Try again.")
-                continue
-
             # Create the account object and save immediately
-            else:
-                try:
-                    service.create_account(name, password)
-                    save_data(service.accounts)
-                    print("Account created successfully!")
-                except ValueError as e:
-                    print(e)
+            try:
+                service.create_account(name, password)
+                save_data(service.accounts)
+                print("Account created successfully!")
+            except ValueError as e:
+                print(e)
                 continue
 
         # -------------------------
@@ -131,20 +116,11 @@ def main():
                     case "deposit":
 
                         try:
-                            amount = float(
-                                input("Enter amount to deposit: "))
-
-                            # Reject zero/negative deposits
-                            if amount <= 0:
-                                print("Deposit amount must be positive.")
-                                continue
-                            else:
-                                try:
-                                    print(service.deposit(
-                                        current_account, amount))
-                                    save_data(service.accounts)
-                                except ValueError as e:
-                                    print(e)
+                            amount = float(input("Enter amount to deposit: "))
+                            print(service.deposit(current_account, amount))
+                            save_data(service.accounts)
+                        except ValueError as e:
+                            print(e)
 
                         except ValueError:
                             print("Invalid input. Please enter a valid number.")
@@ -266,10 +242,6 @@ def main():
 
                     case _:
                         print("Invalid action. Please try again.")
-            else:
-                # Login failed
-                print("Access denied. Incorrect name or password.")
-                continue
 
 
 if __name__ == "__main__":
