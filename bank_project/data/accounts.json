@@ -2,60 +2,19 @@
     "preet": {
         "name": "preet",
         "password": "123456",
-        "balance": 8050.0,
+        "balance": 8500.0,
         "history": [
             "Account created with $0",
-            "Deposited: $5000.0. New balance: $5000.0.",
-            "Withdrew: $50.0. New balance: $4950.0.",
-            "Withdrew: $400.0. New balance: $4550.0.",
-            "Withdrew: $200.0. New balance: $4350.0.",
-            "Deposited: $2000.0. New balance: $6350.0.",
-            "Deposited: $200.0. New balance: $6550.0.",
-            "Deposited: $2000.0. New balance: $8550.0.",
-            "Withdrew: $500.0. New balance: $8050.0."
+            "Deposited: $9000.0. New balance: $9000.0.",
+            "Withdrew: $500.0. New balance: $8500.0."
         ]
     },
     "kamini": {
         "name": "kamini",
-        "password": "54321",
-        "balance": 7100.0,
+        "password": "4444",
+        "balance": 0,
         "history": [
-            "Account created with $0",
-            "Deposited: $400.0. New balance: $400.0.",
-            "Deposited: $1000.0. New balance: $1400.0.",
-            "Deposited: $3000.0. New balance: $4400.0.",
-            "Deposited: $200.0. New balance: $4600.0.",
-            "Deposited: $2500.0. New balance: $7100.0."
-        ]
-    },
-    "bharat": {
-        "name": "bharat",
-        "password": "0987",
-        "balance": 2550.0,
-        "history": [
-            "Account created with $0",
-            "Deposited: $3000.0. New balance: $3000.0.",
-            "Withdrew: $250.0. New balance: $2750.0.",
-            "Withdrew: $200.0. New balance: $2550.0."
-        ]
-    },
-    "parth": {
-        "name": "parth",
-        "password": "6767",
-        "balance": 2000.0,
-        "history": [
-            "Account created with $0",
-            "Deposited: $2000.0. New balance: $2000.0."
-        ]
-    },
-    "ace": {
-        "name": "ace",
-        "password": "777",
-        "balance": 5500.0,
-        "history": [
-            "Account created with $0",
-            "Deposited: $5000.0. New balance: $5000.0.",
-            "Deposited: $500.0. New balance: $5500.0."
+            "Account created with $0"
         ]
     }
 }

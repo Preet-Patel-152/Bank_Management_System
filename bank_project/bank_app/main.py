@@ -1,7 +1,8 @@
 from bank_project.account import bank
+from bank_project.bank_app.services import storage
 from bank_project.bank_app.services.storage import save_data, load_data
 from bank_project.bank_app.services.bank_service import BankService
-import sqlite3
+from bank_project.bank_app.services.dual_storage import DualStorage
 
 
 # =============================
@@ -34,7 +35,8 @@ def main():
     """Main entry point for the Bank Management System."""
 
     # Load existing accounts from file (if any)
-    accounts = load_data()
+    storage = DualStorage()
+    accounts = storage.load_accounts()   # loads from SQLite, mirrors JSON snapshot
     service = BankService(accounts)
 
     # =============================
@@ -56,7 +58,7 @@ def main():
         # Exit program safely
         # -------------------------
         if action == "done":
-            save_data(service.accounts)
+            storage.save_all(service.accounts)
             print("THANK YOU FOR USING THE BANK ACCOUNT APP")
             break
 
@@ -70,7 +72,9 @@ def main():
             # Create the account object and save immediately
             try:
                 service.create_account(name, password)
-                save_data(service.accounts)
+                storage.save_all(service.accounts)
+                storage.log_tx(name, "ACCOUNT_CREATED",
+                               note="New account created")
                 print("Account created successfully!")
             except ValueError as e:
                 print(e)
@@ -119,7 +123,9 @@ def main():
                         try:
                             amount = float(input("Enter amount to deposit: "))
                             print(service.deposit(current_account, amount))
-                            save_data(service.accounts)
+                            storage.log_tx(current_account.name,
+                                           "DEPOSIT", amount)
+                            storage.save_all(service.accounts)
                         except ValueError as e:
                             print(e)
 
@@ -135,7 +141,10 @@ def main():
                         try:
                             amount = float(input("Enter amount to withdraw: "))
                             print(service.withdraw(current_account, amount))
-                            save_data(service.accounts)
+                            storage.log_tx(current_account.name,
+                                           "WITHDRAW", amount)
+                            storage.save_all(service.accounts)
+
                         except ValueError as e:
                             print(e)
 
@@ -155,7 +164,9 @@ def main():
                             "Enter new password: ").strip()
                         print(current_account.change_accout_password(
                             new_password))
-                        save_data(accounts)  # Save new password
+                        storage.log_tx(
+                            current_account.name, "PASSWORD_CHANGE", note="Password updated")
+                        storage.save_all(service.accounts)
 
                     # -------------------------
                     # Delete account (only if balance is zero)
@@ -171,7 +182,14 @@ def main():
 
                         try:
                             service.delete_account(current_account, confirm)
-                            save_data(service.accounts)
+                            deleted_name = current_account.name
+                            service.delete_account(current_account, confirm)
+                            storage.delete_account(
+                                deleted_name, service.accounts)
+                            storage.log_tx(
+                                deleted_name, "ACCOUNT_DELETED", note="Account deleted")
+                            storage.save_all(service.accounts)
+
                             print(
                                 f"\nSUCCESS: Account for {current_account.name} has been closed and deleted.")
                             break
@@ -197,7 +215,12 @@ def main():
                             amount = float(input("Enter amount to transfer: "))
                             print(service.transfer(
                                 current_account, recipient_name, amount))
-                            save_data(service.accounts)
+                            storage.log_tx(
+                                current_account.name, "TRANSFER_OUT", amount, f"to {recipient_name}")
+                            storage.log_tx(
+                                recipient_name, "TRANSFER_IN", amount, f"from {current_account.name}")
+                            storage.save_all(service.accounts)
+
                         except ValueError as e:
                             print(e)
 
@@ -238,7 +261,7 @@ def main():
                     # -------------------------
                     case "exit":
                         print("Exiting account management.")
-                        save_data(accounts)
+                        storage.save_all(service.accounts)
                         break
 
                     case _:
