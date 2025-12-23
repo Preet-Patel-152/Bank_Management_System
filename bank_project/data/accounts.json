@@ -2,19 +2,23 @@
     "preet": {
         "name": "preet",
         "password": "123456",
-        "balance": 8500.0,
+        "balance": 13000.0,
         "history": [
-            "Account created with $0",
-            "Deposited: $9000.0. New balance: $9000.0.",
-            "Withdrew: $500.0. New balance: $8500.0."
+            "2025-12-23 22:51:53 | MIGRATED_HISTORY | Withdrew: $500.0. New balance: $8500.0.",
+            "2025-12-23 22:51:53 | MIGRATED_HISTORY | Deposited: $9000.0. New balance: $9000.0.",
+            "2025-12-23 22:51:53 | MIGRATED_HISTORY | Account created with $0",
+            "2025-12-22 23:08:53 | WITHDRAW | $500.0 |",
+            "2025-12-22 23:08:32 | DEPOSIT | $9000.0 |",
+            "Deposited: $4500.0. New balance: $13000.0."
         ]
     },
     "kamini": {
         "name": "kamini",
         "password": "4444",
-        "balance": 0,
+        "balance": 0.0,
         "history": [
-            "Account created with $0"
+            "2025-12-23 22:51:53 | MIGRATED_HISTORY | Account created with $0",
+            "2025-12-22 23:09:18 | ACCOUNT_CREATED | New account created"
         ]
     }
 }
